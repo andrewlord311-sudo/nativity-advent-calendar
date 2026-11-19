@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b1130">
+<title>The nativity advent calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Mountains+of+Christmas:wght@700&display=swap" media="print" onload="this.media='all'">   <!-- not render-blocking -->
+<link rel="modulepreload" href="js/app.js"><link rel="modulepreload" href="js/player.js"><link rel="modulepreload" href="js/scene.js">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="titles"><h1>Advent</h1><span id="forWho"></span></div>
+    <button id="elfChip" class="elfChip" aria-label="Elf finds">🧝 0</button><button id="finaleBtn" class="finaleBtn" hidden>🎄 Finale</button>
+    <div id="status" class="status"></div>
+    <span id="previewNote" class="preview"></span>
+  </header>
+
+  <div id="sceneWrap" class="scene-wrap"><svg id="scene" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bethlehem at night, with the advent doors"></svg></div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <section id="intro" class="intro">
+    <div id="snow" class="snow" aria-hidden="true"></div>
+    <div class="introPals">
+      <div class="pal" id="palMelody"></div>
+      <svg class="introStar" viewBox="-160 -160 320 320" aria-hidden="true">
+      <defs><radialGradient id="ig"><stop offset=".15" stop-color="#fffbe0"/><stop offset=".45" stop-color="#ffd84a" stop-opacity=".45"/><stop offset="1" stop-color="#ffd84a" stop-opacity="0"/></radialGradient></defs>
+      <circle r="155" fill="url(#ig)"/>
+      <g class="rays" stroke="#fff3b0" stroke-width="5" stroke-linecap="round" opacity=".8">
+        <path d="M0,-150 V-95 M0,95 V150 M-150,0 H-95 M95,0 H150 M-104,-104 L-72,-72 M104,104 L72,72 M-104,104 L-72,72 M104,-104 L72,-72"/></g>
+      <path d="M0,-78 L18,-25 74,-25 29,9 46,64 0,31 -46,64 -29,9 -74,-25 -18,-25 Z" fill="#f7d117" stroke="#fffbe0" stroke-width="7" stroke-linejoin="round"/>
+    </svg>
+      <div class="pal" id="palBarnaby"></div>
+    </div>
+    <p class="introKicker">✦ a window for every day until Christmas ✦</p>
+    <h2>The Nativity<br>Advent Calendar</h2>
+    <p class="introFor" id="introFor"></p>
+    <button id="open" class="btn go big">Open the calendar ✨</button>
+    <p class="introElf">🧝 A cheeky elf is hiding in every window. Can you spot him? Tap him when you do!</p>
+    <p class="introToday" id="introToday"></p>
+    <svg class="town" viewBox="0 0 400 110" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <path d="M0,110 V78 Q60,60 120,72 T240,70 T400,66 V110 Z" fill="#0f1a3d"/>
+      <g fill="#14214d"><rect x="22" y="58" width="38" height="30"/><rect x="58" y="48" width="30" height="40"/><rect x="92" y="62" width="34" height="26"/>
+        <rect x="262" y="54" width="36" height="34"/><rect x="296" y="62" width="40" height="26"/><rect x="336" y="50" width="28" height="38"/>
+        <path d="M168,88 V64 L200,44 L232,64 V88 Z"/></g>
+      <g fill="#ffd75e"><rect x="34" y="66" width="7" height="7"/><rect x="68" y="56" width="6" height="7"/><rect x="104" y="70" width="7" height="6"/>
+        <rect x="274" y="62" width="7" height="7"/><rect x="310" y="70" width="7" height="6"/><rect x="345" y="58" width="6" height="7"/>
+        <path d="M190,88 V72 Q200,64 210,72 V88 Z" opacity=".9"/></g>
+    </svg>
+  </section>
+
+  <section id="finish" class="finish" hidden>
+    <div class="fCard" role="dialog" aria-live="polite">
+      <div class="fTick">✓</div>
+      <h3 class="fTitle"></h3>
+      <p class="fSticker"></p>
+      <p class="fNext"></p>
+      <button class="btn go big">Hooray!</button>
+    </div>
+  </section>
+
+  <section id="finale" class="finale" hidden>
+    <div id="fSnow" class="snow" aria-hidden="true"></div>
+    <div class="introPals"><div class="pal" id="fMel"></div><svg class="introStar" viewBox="-160 -160 320 320" aria-hidden="true"><circle r="155" fill="url(#ig)"/><g class="rays" stroke="#fff3b0" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M0,-150 V-95 M0,95 V150 M-150,0 H-95 M95,0 H150 M-104,-104 L-72,-72 M104,104 L72,72 M-104,104 L-72,72 M104,-104 L72,-72"/></g><path d="M0,-78 L18,-25 74,-25 29,9 46,64 0,31 -46,64 -29,9 -74,-25 -18,-25 Z" fill="#f7d117" stroke="#fffbe0" stroke-width="7" stroke-linejoin="round"/></svg><div class="pal" id="fBar"></div></div>
+    <h2>Happy Christmas!</h2>
+    <p class="introFor" id="fNames"></p>
+    <p class="introElf" id="fElf"></p>
+    <p class="introToday">The whole story is in the picture. You can open any window and play it again.</p>
+    <button id="finaleClose" class="btn go big">Back to the calendar</button>
+  </section>
+
+  <section id="player" class="player" hidden></section>
+
+  <!-- the crayon look, shared with the kids' videos (classic scripts: they define globals) -->
+  <script src="crayon/core.js"></script>
+  <script src="crayon/kit.js"></script>
+  <script src="crayon/runtime.js"></script>
+  <script src="crayon/live.js"></script>
+  <script src="crayon/nativity.js"></script>
+  <!-- Melody, Barnaby and the five animals, shared with the music games -->
+  <script src="stickers/mascots.js"></script>
+  <script src="stickers/animals.js"></script>
+  <script>
+    // the greeting on the opening screen, from the part of the link after #
+    (function () { var n = new URLSearchParams(location.hash.slice(1)).get("for"); if (n) document.getElementById("introFor").textContent = "for " + n.split(/[\s,&]+/).filter(Boolean).join(" and "); })();
+  </script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
