@@ -25,7 +25,8 @@ export async function pick(step, api) {
       tap = async e => {
         if (busy) return;
         const p = api.svgPoint(e);
-        const i = step.options.findIndex(o => Math.hypot(o.at[0] - p.x, o.at[1] - p.y) < o.r);
+        let i = -1, best = Infinity;   // the nearest option whose circle holds the tap (circles of long planks overlap their neighbours)
+        step.options.forEach((o, k) => { const d = Math.hypot(o.at[0] - p.x, o.at[1] - p.y); if (d < o.r && d < best) { best = d; i = k; } });
         if (i < 0) return;
         const mv = step.options[i].move;
         if (i !== step.answer && mv) { busy = true; api.sfx.tap(); api.caption(mv.say || "Hmm…"); await slideIt(mv, null, true); api.sfx.wrong(); api.caption(step.prompt); busy = false; return; }

@@ -58,6 +58,14 @@ export const sfx = {
   meow: () => { tone(620, 0, 0.12, "triangle", 0.1); tone(760, 0.1, 0.25, "triangle", 0.1); },
   hoot: () => { tone(330, 0, 0.35, "sine", 0.12); tone(262, 0.45, 0.6, "sine", 0.12); },
   roar: () => { if (!ctx) return; [110, 82, 65].forEach((f, i) => tone(f, i * 0.12, 0.5, "sawtooth", 0.12)); },
+  crunch: () => { if (!ctx) return; [90, 70, 55].forEach((f, i) => tone(f, i * 0.05, 0.18, "square", 0.1)); },
+  munch: () => { if (!ctx) return; [260, 200, 250].forEach((f, i) => tone(f, i * 0.09, 0.08, "square", 0.06)); },
+  squeak: () => { if (!ctx) return; tone(1500, 0, 0.1, "sine", 0.08); tone(1900, 0.08, 0.14, "sine", 0.08); },
+  kick: () => { if (!ctx) return; tone(140, 0, 0.1, "triangle", 0.16); },
+  whee: () => { if (!ctx) return; [400, 500, 650, 820, 1000].forEach((f, i) => tone(f, i * 0.12, 0.2, "triangle", 0.09)); },
+  toot: () => { if (!ctx) return; tone(392, 0, 0.35, "sawtooth", 0.08); tone(523, 0.02, 0.35, "sawtooth", 0.06); },
+  chug: () => { if (!ctx) return; tone(120, 0, 0.07, "square", 0.06); },
+  note: (i = 0) => { if (!ctx) return; tone([523.25, 659.25, 783.99, 880, 987.77][i % 5], 0, 0.35, "triangle", 0.12); },
   vroom: () => { if (!ctx) return; [90, 120, 170, 230].forEach((f, i) => tone(f, i * 0.1, 0.25, "sawtooth", 0.08)); },
   crayon: () => {   // a short scratchy noise burst while tracing
     if (!ctx) return;

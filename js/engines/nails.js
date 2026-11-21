@@ -10,6 +10,24 @@ export async function nails(step, api) {
   const artG = [];
   if (step.arts) step.arts.forEach((a, i) => { const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); draw.appendChild(g); artG.push(g); const h = crayonMount(g, a.up(), 120 + i); crayonFrame(h, crayonEnd(h)); });
   api.caption(step.prompt); api.say("yourTurn");
+  // optional: a figure (step.mover: { art(), from: [x, y], to?: (spot) => [x, y], arc }) that hops from one spot to the next, facing the way it travels
+  let mv = null;
+  if (step.mover) {
+    const w = document.createElementNS("http://www.w3.org/2000/svg", "g"), g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    w.appendChild(g); draw.appendChild(w); const h = crayonMount(g, step.mover.art(), 150); crayonFrame(h, crayonEnd(h));
+    mv = { w, pos: step.mover.from.slice(), busy: false };
+    w.style.transform = `translate(${mv.pos[0]}px, ${mv.pos[1]}px)`;
+  }
+  const hop = (spot) => {
+    const [tx, ty] = step.mover.to ? step.mover.to(spot) : spot, [fx, fy] = mv.pos, arc = step.mover.arc || 200, t0 = performance.now(), ms = 800;
+    mv.pos = [tx, ty];
+    const frame = now => {
+      const u = Math.min(1, (now - t0) / ms), e = u * u * (3 - 2 * u);
+      mv.w.style.transform = `translate(${fx + (tx - fx) * e}px, ${fy + (ty - fy) * e - Math.sin(Math.PI * u) * arc}px) rotate(${Math.sin(Math.PI * u) * -8}deg)`;
+      if (u < 1 && mv.w.isConnected) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  };
   const done = new Set(); let tap;
   try {
     await api.until(new Promise(resolve => {
@@ -19,6 +37,7 @@ export async function nails(step, api) {
         if (i < 0) { api.sfx.wrong(); return; }
         done.add(i);
         const [x, y] = step.spots[i];
+        if (mv) hop(step.spots[i]);
         if (step.arts) { const g = artG[i]; g.innerHTML = ""; const h = crayonMount(g, step.arts[i].down(), 140 + i); crayonFrame(h, crayonEnd(h)); g.setAttribute("class", "bounce"); }
         top.querySelector(`.spot[data-i="${i}"]`).innerHTML = step.spotDone ? step.spotDone(x, y, i) : `<rect x="${x - 7}" y="${y - 30}" width="14" height="60" rx="4" fill="#7b7f89" stroke="#2b2b2b" stroke-width="5"/>`;
         bangs.insertAdjacentHTML("beforeend", `<text class="elfSay" x="${x}" y="${y - 70}" font-size="80" text-anchor="middle" fill="#e8392c" stroke="#fff" stroke-width="9" paint-order="stroke">${step.words ? step.words[i] : step.word || "BANG!"}</text>`);

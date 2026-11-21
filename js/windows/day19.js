@@ -2,7 +2,7 @@
 
 const desert = () => sky(0) + sun(1360, 170, 0.1) + ground(900, 0.1, "#e0c27a", "#b58a3a");
 const DUNES = [[560, 780], [780, 740], [1000, 790], [1200, 740], [1380, 790]];
-const scene = () => desert() + DUNES.map(([x, y], i) => G(dune(x, y + 120, 300, 130), { t: 0.2 + i * 0.12, dur: 0.4 })).join("") + G(camel(520, 1060, 0.7), { t: 0.9, dur: 0.6 });
+const scene = () => desert() + DUNES.map(([x, y], i) => G(dune(x, y + 120, 300, 130), { t: 0.2 + i * 0.12, dur: 0.4 })).join("");   // the camel itself is the hopping figure (see the nails step)
 const trail = [[480, 1000], [640, 900], [800, 960], [960, 840], [1120, 900], [1260, 760], [1120, 660], [960, 600], [1120, 500], [1300, 440], [1420, 360]];
 const smooth = pts => { const out = []; for (let i = 0; i < pts.length - 1; i++) for (let k = 0; k < 6; k++) { const u = k / 6, [a, b] = [pts[i], pts[i + 1]]; out.push([a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]); } out.push(pts[pts.length - 1]); return out; };
 const longRide = () => desert() + P(cr(smooth(trail)), { s: "#c9a14a", w: 50 }) + [[800, 960], [1120, 900], [960, 600], [1300, 440], [640, 900]].map(([x, y]) => starP(x, y - 60, 30)).join("");
@@ -18,7 +18,8 @@ export default {
       "It was a very long journey, over many sandy dunes.",
     ] },
     { type: "nails", scene: scene, seed: 192, ordered: true, spots: DUNES.map(([x, y]) => [x, y + 20]), ring: 90, word: "Hop!", sounds: DUNES.map(() => "hee"),
-      spotDone: (x, y) => `<text x="${x}" y="${y - 40}" font-size="110" text-anchor="middle">🐪</text>`, elf: { at: [1490, 360], kind: "hat" },
+      mover: { art: () => camel(0, 0, 0.55), from: [560, 1050], to: ([x, y]) => [x - 55, y + 20], arc: 230 },
+      spotDone: (x, y) => `<ellipse cx="${x}" cy="${y + 20}" rx="42" ry="12" fill="#b58a3a" opacity=".55"/>`, elf: { at: [1490, 360], kind: "hat" },
       prompt: "Tap each dune, one after another, and watch the camel hop over it!", doneCaption: "The camels hopped over every dune!" },
   ],
   star: { steps: [{ type: "trace", scene: longRide, seed: 193, path: smooth(trail), done: arrived, elf: { at: [1490, 900], kind: "hat" }, prompt: "★ A longer ride! Trace the winding path and collect the stars.", doneCaption: "What a long journey! You collected all the stars." }], after: arrived },

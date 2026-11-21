@@ -1,5 +1,3 @@
-import trexSurprise from "../surprises/trex.js";
-
 // Window 1 (Tue 1 Dec): the magic door. Maya draws a door into the Christmas story; behind it is Nazareth, and Mary.
 // Activity: trace the door. ★ Star challenge: find six things in Mary's house.
 // Scenes are drawn in the kids-video 1920 x 1080 frame; the player shows the square from x = 420 to 1500.
@@ -68,7 +66,6 @@ export default {
     at: [455, 905], scale: 0.42,      // in the big scene: in front of Mary's house in Nazareth
     showAt: 990, showScale: 2,
   },
-  surprise: new URLSearchParams(location.search).has("surprise") ? trexSurprise : undefined,   // trial only: this surprise belongs on day 3
   steps: [
     { type: "story", scene: denScene, seed: 11, elf: { at: [1250, 0], kind: "leg" }, captions: [
       "This is Maya, and this is Theo.",

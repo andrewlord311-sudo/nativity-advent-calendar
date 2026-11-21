@@ -20,6 +20,7 @@ import { wrap } from "./engines/wrap.js";
 import { simon } from "./engines/simon.js";
 import { diff } from "./engines/diff.js";
 import { slide } from "./engines/slide.js";
+import SURPRISES from "./surprises/index.js";
 
 const ENGINES = { trace, seek, rub, order, nails, pick, drag, names, echo, dots, doors, torch, wrap, simon, diff, slide };
 const $ = id => document.getElementById(id);
@@ -135,6 +136,14 @@ function stickerScene(win) {
   const ink = top.querySelector(".ink");
   if (st.crayon) { const h = crayonMount(ink, st.crayon(), 700 + win.day); crayonFrame(h, crayonEnd(h)); }
   else { ink.removeAttribute("filter"); ink.innerHTML = st.svg(); }
+  // sit the sticker in the middle of the square, whatever its drawing's origin: measure it, fit it, centre it
+  try {
+    const b = ink.getBBox();
+    if (b.width > 0 && b.height > 0) {
+      const m = Math.max(b.width, b.height), sc = Math.min(700 / m, Math.max(st.showScale || 1.25, 460 / m));   // small things are enlarged a little
+      top.querySelector(".pop > g").setAttribute("transform", `translate(${960 - (b.x + b.width / 2) * sc} ${540 - (b.y + b.height / 2) * sc}) scale(${sc})`);
+    }
+  } catch { /* keep the hand-set position */ }
 }
 
 // The order: the window's steps → "well done" (and the ★ star challenge, if wanted) → collect the sticker → back to the
@@ -173,10 +182,11 @@ export async function playWindow(win, { names, onDone, elfFound }) {
     stickerScene(win);
     sfx.fanfare();
     await until(caption(win.sticker.found, { big: true }));
-    if (win.surprise) {
+    const surprise = names ? (win.surprise || SURPRISES[win.day]) : null;   // the family link only: the public copy has none
+    if (surprise) {
       await next("🎁 Wait… what's that?");
       showElf(null); $("pTop").innerHTML = ""; $("pTray").innerHTML = ""; $("pDraw").innerHTML = "";
-      await win.surprise({ ...api, mark: () => onDone("surprise") });
+      await surprise({ ...api, mark: () => onDone("surprise") });
       $("pTop").innerHTML = ""; $("pDraw").innerHTML = "";
       stickerScene(win);
     }
