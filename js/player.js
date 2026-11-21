@@ -47,7 +47,9 @@ const until = p => Promise.race([p, closing]);
 
 export function showScene(html, seed = 1) {
   $("pTop").innerHTML = "";
+  const m0 = performance.now();
   handle = crayonMount($("pCrayon"), html, seed);
+  window.__perf?.(`scene mounted (${Math.round(performance.now() - m0)} ms of drawing setup)`);
   t0 = performance.now();
   return handle;
 }
@@ -155,6 +157,7 @@ export async function playWindow(win, { names, onDone, elfFound }) {
   hint.textContent = elfFound ? "🧝 ✓ elf found!" : "🧝 Find the elf!"; hint.classList.toggle("found", !!elfFound);
   onElf = () => { hint.textContent = "🧝 ✓ elf found!"; hint.classList.add("found"); onDone("elf"); };
   p.hidden = false; document.body.classList.add("playing");
+  window.__perf?.("player shown"); requestAnimationFrame(() => requestAnimationFrame(() => window.__perf?.("first paint after the tap")));
   $("pTitle").textContent = `${win.day} · ${win.title}`;
   $("pCaption").textContent = ""; $("pActions").innerHTML = ""; $("pTray").innerHTML = "";
   closing = closed();

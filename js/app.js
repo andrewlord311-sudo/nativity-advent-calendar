@@ -108,7 +108,19 @@ function toast(text) {
 
 function shake(el) { el.classList.remove("shake"); void el.getBBox(); el.classList.add("shake"); }
 
+// ?perf shows a little timing log on screen (for finding what is slow on an iPad): time since the last door tap
+let perfT0 = 0;
+export const perf = label => {
+  if (!q.has("perf")) return;
+  let box = document.getElementById("perfBox");
+  if (!box) { box = document.createElement("pre"); box.id = "perfBox"; box.style.cssText = "position:fixed;left:6px;bottom:6px;z-index:99;margin:0;padding:6px 8px;background:#000c;color:#9f9;font:12px monospace;max-width:90vw;pointer-events:none;white-space:pre-wrap"; document.body.appendChild(box); }
+  box.textContent += `${perfT0 ? Math.round(performance.now() - perfT0) : 0} ms  ${label}\n`;
+};
+window.__perf = perf;
+
 async function openDoor(n, el) {
+  if (q.has("perf")) { perfT0 = performance.now(); const b = document.getElementById("perfBox"); if (b) b.textContent = ""; }
+  perf(`tap door ${n}`);
   const state = doorState(n);
   if (state === "locked") {
     sfx.locked(); shake(el);
@@ -117,8 +129,9 @@ async function openDoor(n, el) {
     return;
   }
   const win = await windowModule(n);
+  perf("window file loaded");
   if (!win) { sfx.locked(); shake(el); toast(`Window ${n}, "${TITLES[n]}", is still being painted…`); return; }
-  sfx.tap();
+  sfx.tap(); perf("playWindow starts");
   const result = await playWindow(win, {
     names, elfFound: (prog.elf || []).includes(n),
     onDone: kind => { progress.mark(st.season, prog, n, kind === "star" ? "star" : kind === "elf" ? "elf" : kind === "surprise" ? "surprise" : "done"); },
@@ -188,6 +201,9 @@ async function start() {
     document.body.classList.add("opened");   // until now the scene is hidden: nothing paints under the intro
     $("intro").classList.add("gone"); setTimeout(() => { $("intro").style.display = "none"; }, 900);   // fully off: its snow was animating (and repainting) behind everything
     scrollToDoor(st.opened > 0 ? st.opened : 1, false);
+    // fetch and parse the window files in the background so the first tap on a door has nothing to wait for
+    const warm = (ns => { let i = 0; const next = () => { if (i < ns.length) windowModule(ns[i++]).catch(() => {}).then(() => (window.requestIdleCallback || setTimeout)(next)); }; return next; })(Object.keys(WINDOWS).map(Number).filter(n => st.isOpen(n)));
+    setTimeout(warm, 1500);
   });
 }
 
