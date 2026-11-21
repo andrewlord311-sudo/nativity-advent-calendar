@@ -182,7 +182,7 @@ export async function playWindow(win, { names, onDone, elfFound }) {
     stickerScene(win);
     sfx.fanfare();
     await until(caption(win.sticker.found, { big: true }));
-    const surprise = names ? (win.surprise || SURPRISES[win.day]) : null;   // the family link only: the public copy has none
+    const surprise = win.surprise || SURPRISES[win.day];
     if (surprise) {
       await next("🎁 Wait… what's that?");
       showElf(null); $("pTop").innerHTML = ""; $("pTray").innerHTML = ""; $("pDraw").innerHTML = "";
