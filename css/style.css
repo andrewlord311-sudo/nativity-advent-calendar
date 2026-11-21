@@ -170,3 +170,6 @@ button { font-family: var(--hand); font-weight: 700; }
    were repainting under the player and made taps and drags lag badly (about 10 frames a second on a slow device, 60 without them). */
 body.playing .scene-wrap, body.playing .top { visibility: hidden; }
 body.playing .scene-wrap *, body.playing .intro * { animation-play-state: paused !important; }
+
+/* lite mode (see index.html): live SVG filters (the crayon grain and wobble, the sticker outline) cost 5 frames a second on an iPad-class CPU */
+html.lite [filter] { filter: none !important; }
