@@ -90,7 +90,7 @@ export function drawScene(svg) {
         <feMerge><feMergeNode in="shadow"/><feMergeNode in="edge"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
     </defs>
-    <rect width="${W}" height="${H}" fill="url(#nightSky)"/>
+    <rect id="skyRect" width="${W}" height="${H}" fill="url(#nightSky)"/>
     <g id="theStar" transform="translate(2425 230)">
       <path class="beam" d="M-40,40 L-260,${870} L260,${870} L40,40 Z" fill="#fff3a0"/>
       <circle class="glow" r="260" fill="url(#starGlow)"/>
@@ -135,4 +135,27 @@ export function placeSticker(svg, day, st, arrive = false) {
   if (st.crayon) { const h = crayonMount(ink, st.crayon(), 500 + day); crayonFrame(h, crayonEnd(h)); }
   else { ink.removeAttribute("filter"); ink.innerHTML = st.svg(); }
   return outer;
+}
+
+// Safari on an iPad cannot repaint a 3600-wide SVG with 500 crayon paths and 80 clip paths while anything animates in it
+// (the intro took ten seconds to respond). So the still scenery (sky, hills, houses, stable) is baked ONCE into a canvas
+// that sits behind the live SVG; only the doors, the star and the stickers stay live. Falls back to the live art on any error.
+export async function bakeScene(svg) {
+  try {
+    const art = svg.querySelector("#art"), sky = svg.querySelector("#skyRect");
+    if (!art || !sky) return;
+    const S = 1.2, w = Math.round(W * S), h = Math.round(H * S);
+    const lite = document.documentElement.classList.contains("lite");
+    const artXml = art.outerHTML.replace(' filter="url(#kid-scene)"', lite ? "" : ' filter="url(#kid-scene)"');   // lite: no grain filter, as everywhere else
+    const defs = [...svg.querySelectorAll("defs")].map(d => d.outerHTML).join("");
+    const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${TOP} ${W} ${H}" width="${w}" height="${h}">${defs}${sky.outerHTML}${artXml}</svg>`;
+    const img = new Image();
+    img.src = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
+    await img.decode();
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h; cv.id = "sceneBake";
+    cv.getContext("2d").drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(img.src);
+    svg.parentNode.insertBefore(cv, svg);
+    art.remove(); sky.remove(); svg.querySelector("defs.clips")?.remove();
+  } catch (e) { console.warn("scene bake skipped", e); }
 }

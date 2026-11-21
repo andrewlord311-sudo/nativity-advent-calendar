@@ -7,7 +7,7 @@
 import { status, previewDay, previewDate } from "./dates.js";
 import * as progress from "./progress.js";
 import { unlock, sfx } from "./sound.js";
-import { drawScene, drawDoors, setStar, placeSticker, DOORS, W, H } from "./scene.js";   // H is the visible height
+import { drawScene, bakeScene, drawDoors, setStar, placeSticker, DOORS, W, H } from "./scene.js";   // H is the visible height
 import { playWindow, playerMarkup } from "./player.js";
 import { WINDOWS, TITLES } from "./windows/index.js";
 
@@ -165,6 +165,7 @@ async function start() {
   const svg = $("scene");
   sizeScene();
   drawScene(svg);
+  bakeScene(svg);
   refresh();
   for (const n of prog.done) { const win = await windowModule(n); if (win?.sticker) placeSticker(svg, n, win.sticker); }
   $("doors").addEventListener("click", e => {
@@ -184,6 +185,7 @@ async function start() {
 
   $("open").addEventListener("click", () => {
     unlock(); sfx.chime();
+    document.body.classList.add("opened");   // until now the scene is hidden: nothing paints under the intro
     $("intro").classList.add("gone"); setTimeout(() => { $("intro").style.display = "none"; }, 900);   // fully off: its snow was animating (and repainting) behind everything
     scrollToDoor(st.opened > 0 ? st.opened : 1, false);
   });

@@ -173,3 +173,8 @@ body.playing .scene-wrap *, body.playing .intro * { animation-play-state: paused
 
 /* lite mode (see index.html): live SVG filters (the crayon grain and wobble, the sticker outline) cost 5 frames a second on an iPad-class CPU */
 html.lite [filter] { filter: none !important; }
+#scene { position: relative; }
+#sceneBake { position: absolute; left: 0; top: 0; height: 100%; width: auto; }
+body:not(.opened) .scene-wrap { visibility: hidden; }
+html.lite .snow, html.lite .introStar, html.lite .introStar .rays { animation: none; }
+html.lite .snow { display: none; }
